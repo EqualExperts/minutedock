@@ -1,5 +1,13 @@
 var fs = require('fs');
 var express = require('express');
+var favicon = require('serve-favicon');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
+var cookieParser = require('cookie-parser');
+var compress = require('compression');
+var session = require('express-session');
+var errorHandler = require('express-error-handler');
+var logger = require('morgan');
 var path = require('path');
 var passport = require('passport');
 var ejs = require('ejs');
@@ -22,29 +30,32 @@ app.set('view engine', 'ejs');
 app.enable('case sensitive routing');
 
 app.engine('html', ejs.renderFile);
-app.use(express.favicon());
-app.use(express.bodyParser());
-app.use(express.cookieParser());
-app.use(express.methodOverride());
-app.use(express.compress());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(methodOverride());
+app.use(compress());
 
-app.use(express.cookieSession({ secret: config["session.cookie.secret"], cookie: {secure: false, httpOnly : config["cookie.httpOnly"]}}));
+app.use(session({
+    secret: config["session.cookie.secret"],
+    cookie: {secure: false, httpOnly : config["cookie.httpOnly"]},
+    resave: true,
+    saveUninitialized: true
+}));
 app.use(express.static(path.join(__dirname, '../static')));
 
 // express logger used after static path binding so that it does not logs static files
-app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+app.use(errorHandler({ dumpExceptions: true, showStack: true }));
 if("production" === app.get('env')){
   app.enable('view cache');
   var requestLogStream = fs.createWriteStream('./logs/requests.log', {flags : 'a'});
-  app.use(express.logger({stream : requestLogStream}));
+  app.use(logger({stream : requestLogStream}));
 } else {
-  app.use(express.logger('dev'));  
+  app.use(logger('dev'));
 }
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(app.router);
 
 app.use(function(err, req, res, next){
   console.error(err);
@@ -55,7 +66,7 @@ function requireAuthentication(req, res, next) {
   if (req.user && req.user.identifier) {
     return next();
   } else if(req.url !== '/')  {
-    res.send(401);
+    res.sendStatus(401);
   }
   else{
     req.logout();

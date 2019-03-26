@@ -39,7 +39,7 @@ define(['modules/app','models/listEntriesModel','service/entriesService'] , func
     };
 
     this.deleteEntry = function(entryId) {
-      var self = this
+      var self = this;
       entriesService.delete(entryId)
       .then(function() {
         addSuccessAlert("Entry deleted successfully!");     

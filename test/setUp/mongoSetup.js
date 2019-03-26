@@ -36,7 +36,7 @@ MongoClient.connect("mongodb://localhost:27017/minutedocktest",function(err,db) 
         flow.execute(function() {
             var defer = protractor.promise.defer();
             var collection = db.collection(collectionName);    
-            collection.insert(newDocument, function(err, records) {
+            collection.insertOne(newDocument, function(err, records) {
                 if(err){
                     defer.reject(error);
                 } else {

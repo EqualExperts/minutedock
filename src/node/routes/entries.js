@@ -100,12 +100,12 @@ exports.delete = function(req, res) {
 		return md.entries.delete(req.params.entryId);
 	})
 	.then(function() {
-		res.send(204);
+		res.sendStatus(204);
 	})
     .fail(function(data) {
 		if(!data || data.status === 403){
 			userRepository.deleteUsers(req.user.identifier);
-			res.send(403);
+			res.sendStatus(403);
 		}
 	});
 };
@@ -126,19 +126,19 @@ exports.bulkDelete = function(req, res) {
 			if(result.state != "fulfilled"){
 				if(result.reason.status == 403){
 					userRepository.deleteUsers(req.user.identifier);
-					res.send(403);				
+					res.sendStatus(403);
 				}
 				errorReasons.push(result.reason);				
 			}
 		});
 		if(errorReasons.length > 0){
 			console.log(errorReasons);
-			res.send(400);
+			res.sendStatus(400);
 		}
-		res.send(204);
+		res.sendStatus(204);
 	})
 	.fail(function() {
 		userRepository.deleteUsers(req.user.identifier);
-		res.send(403);	
+		res.sendStatus(403);
 	});
 };

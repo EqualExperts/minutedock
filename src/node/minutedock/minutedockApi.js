@@ -134,7 +134,7 @@ Minutedock.prototype.request = function (path, method, form_data) {
     if(method === "POST" || method === "PUT"){
         options.json = data;
     } else {
-        options.json = {};
+        options.json = true;
         options.qs = data;
     }
 
@@ -145,12 +145,12 @@ Minutedock.prototype.request = function (path, method, form_data) {
             deferred.reject({'status':res.statusCode});                    
             return;            
         }
-        if (res.statusCode != 200) {
+        if (res.statusCode !== 200) {
             console.error('MinuteDock API error: ' + res.statusCode + ' ' + options.uri);
             deferred.reject({'status':res.statusCode});                    
             return;
         }
-        deferred.resolve(body);                
+        deferred.resolve(body);
     });
     return deferred.promise;
 };

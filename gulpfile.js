@@ -1,7 +1,7 @@
 var gulp = require('gulp')
     , gls = require('gulp-live-server')
     , rjs = require('gulp-requirejs')
-    , minifyCss = require('gulp-minify-css')
+    , minifyCss = require('gulp-clean-css')
     , rename = require('gulp-rename')
     , uglify = require('gulp-uglify')
     , protractor = require('gulp-angular-protractor')
@@ -34,7 +34,7 @@ gulp.task('minify-css', function () {
         .pipe(gulp.dest('src/static/stylesheets'));
 });
 
-gulp.task('build', ['minify-js', 'minify-css']);
+gulp.task('build', gulp.parallel('minify-js', 'minify-css'));
 
 var server = gls('src/node/minutedock.js', {
     env: {
@@ -51,7 +51,7 @@ gulp.task('serve', function () {
     });
 });
 
-gulp.task('test', ['build', 'serve'], function () {
+gulp.task('test', gulp.series('build', 'serve'), function () {
     return gulp.src(['./test/**/*.js'])
         .pipe(protractor({
             'configFile': 'test/conf.js',
@@ -124,6 +124,6 @@ gulp.task('package-dependencies', function () {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('package', ['package-src', 'package-config', 'package-dependencies', 'package-README'], shell.task(['cd dist && mkdir -p logs']));
+gulp.task('package', gulp.series['package-src', 'package-config', 'package-dependencies', 'package-README'], shell.task(['cd dist && mkdir -p logs']));
 
-gulp.task('default', ['build', 'start']);
+gulp.task('default', gulp.series['build', 'start']);
