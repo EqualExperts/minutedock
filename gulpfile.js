@@ -4,14 +4,14 @@ var gulp = require('gulp')
     , minifyCss = require('gulp-clean-css')
     , rename = require('gulp-rename')
     , uglify = require('gulp-uglify')
-    , protractor = require('gulp-angular-protractor')
+    , protractor = require('gulp-protractor').protractor
     , del = require('del')
     , shell = require('gulp-shell')
     , gutil = require('gulp-util')
     , rename = require("gulp-rename");
 
 gulp.task('minify-js', function () {
-    rjs({
+    return rjs({
         baseUrl: 'src/static/js',
         mainConfigFile: 'src/static/js/main.js',
         out: 'main.min.js',
@@ -34,7 +34,9 @@ gulp.task('minify-css', function () {
         .pipe(gulp.dest('src/static/stylesheets'));
 });
 
-gulp.task('build', gulp.parallel('minify-js', 'minify-css'));
+gulp.task('build', gulp.parallel('minify-js', 'minify-css'), function () {
+
+});
 
 var server = gls('src/node/minutedock.js', {
     env: {
@@ -51,13 +53,12 @@ gulp.task('serve', function () {
     });
 });
 
-gulp.task('test', gulp.series('build', 'serve'), function () {
+gulp.task('test', function () {
     return gulp.src(['./test/**/*.js'])
         .pipe(protractor({
             'configFile': 'test/conf.js',
-            'args': ['--baseUrl', ''],
-            'autoStartStopServer': true,
-            'debug': true
+            'debug': true,
+            'autoStartStopServer': true
         }))
         .on('error', function (e) {
             console.error(e);

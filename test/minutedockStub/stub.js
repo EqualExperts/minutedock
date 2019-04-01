@@ -1,19 +1,24 @@
 var http = require('http');
 var express = require('express');
-
+var favicon = require('serve-favicon');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
+var cookieParser = require('cookie-parser');
+var compress = require('compression');
+var session = require('express-session');
+var errorHandler = require('express-error-handler');
+var logger = require('morgan');
 var app = express();
 
 app.set('env', process.env.NODE_ENV || "development");
 app.set('port', "9444");
 app.enable('case sensitive routing');
 
-app.use(express.bodyParser());
-app.use(express.compress());
+app.use(bodyParser());
+app.use(compress());
 
-app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-app.use(express.logger('dev'));  
-
-app.use(app.router);
+app.use(errorHandler({ dumpExceptions: true, showStack: true }));
+app.use(logger('dev'));
 
 app.use(function(err, req, res, next){
   console.error(err);
@@ -21,7 +26,7 @@ app.use(function(err, req, res, next){
 });
 
 var validApiKey = "valid_api_key";
-var validAccountId = "valid_account_id"
+var validAccountId = "valid_account_id";
 
 var isValidApiKey = function(req) {
 	return req.query.api_key === validApiKey || req.body.api_key === validApiKey;

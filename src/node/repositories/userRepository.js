@@ -24,13 +24,13 @@ MongoClient.connect(config["mongodb.uri"], {useNewUrlParser:true},function(err, 
     var encryptedApiKey = cipher.update(apiKey, 'utf8', 'base64');
     encryptedApiKey += cipher.final('base64');
 		var document = {identifier : identifier, apiKey : encryptedApiKey, accountId: accountId, recordSalt : recordSalt, date : new Date()};
-        collection.updateOne({identifier : identifier}, document, {upsert:true}, function(err, records) {
+        collection.update({identifier : identifier}, document, {upsert:true}, function(err, records) {
 			if(err) throw err;
 		});		
 	};  
 
   exports.deleteUsers = function(identifier) {
-    collection.removeOne({identifier : identifier},function(err) {
+    collection.remove({identifier : identifier},function(err) {
       if(err) throw err;
     });
   };  

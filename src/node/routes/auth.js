@@ -1,5 +1,5 @@
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var uuid = require('uuid');
 
 var config = require('config');
@@ -44,7 +44,7 @@ exports.logout = function(req,res) {
   res.redirect('/');
 };
 
-exports.authLogin = passport.authenticate('google',{ scope: ['https://www.googleapis.com/auth/userinfo.profile'] });
+exports.authLogin = passport.authenticate('google',{ scope: ['profile'] });
 
 exports.callback = passport.authenticate('google', { successRedirect: '/auth/checkApiKey',
                                     failureRedirect: '/login' });

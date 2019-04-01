@@ -40,7 +40,7 @@ MongoClient.connect(config["mongodb.uri"], {useNewUrlParser:true}, function(err,
     };
 
     exports.removeAuthToken = function (authToken) {
-        collection.removeOne({authToken: authToken}, function (err) {
+        collection.remove({authToken: authToken}, function (err) {
             if (err) throw err;
         });
     };
